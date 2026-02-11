@@ -21,7 +21,7 @@ class AuthApiController extends Controller
         $credentials = $request->only('email', 'password');
 
         // Attempt to authenticate the user
-        if (!auth()->attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'The given data was invalid',
                 'errors' => [
@@ -29,14 +29,11 @@ class AuthApiController extends Controller
                 ]
             ], 422);
         }
-
         $user = User::where('email', $request->email)->first();
         // Revoke all previous tokens
         $user->tokens()->delete();
-
         // Create a new token
         $authToken = $user->createToken('Personal Access Token')->plainTextToken;
-
         return response()->json(['token' => $authToken], 200);
     }
  
